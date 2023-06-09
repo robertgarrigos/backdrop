@@ -737,12 +737,16 @@ abstract class DatabaseConnection {
       if ($options['throw_exception']) {
         // Add additional debug information.
         if ($query instanceof DatabaseStatementInterface) {
-          $e->query_string = $stmt->getQueryString();
+          $query_string = $stmt->getQueryString();
         }
         else {
-          $e->query_string = $query;
+          $query_string = $query;
         }
-        $e->args = $args;
+        $message = ": " . $query_string . "; " . print_r($args, TRUE);
+        $reflectionObject = new \ReflectionObject($e);
+        $reflectionObjectProp = $reflectionObject->getProperty('message');
+        $reflectionObjectProp->setAccessible(true);
+        $reflectionObjectProp->setValue($e, $e->getMessage() . $message);
         throw $e;
       }
       return NULL;
