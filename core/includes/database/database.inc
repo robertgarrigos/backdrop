@@ -745,7 +745,7 @@ abstract class DatabaseConnection {
         $message = ": " . $query_string . "; " . print_r($args, TRUE);
         $reflectionObject = new \ReflectionObject($e);
         $reflectionObjectProp = $reflectionObject->getProperty('message');
-        $reflectionObjectProp->setAccessible(true);
+        $reflectionObjectProp->setAccessible(TRUE);
         $reflectionObjectProp->setValue($e, $e->getMessage() . $message);
         throw $e;
       }
