@@ -1,0 +1,117 @@
+<?php
+
+/**
+ * @file
+ * Create a customizable account creation reminder email.
+ *
+ * E-mail sent when an account is created yet not activated via
+ * initial login.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function account_activation_reminder_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#account_activation_reminder':
+      $output = '';
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('A module allowing site administrators to resend activation emails from a selected user account page. <br> ') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<p>' . t('It offers:') . '</p>';
+      $output .= '<ol><li>' . t('a custom email subject line') . '</li>';
+      $output .= '<li>' . t('a custom email body') . '</li></ol>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function account_activation_reminder_menu() {
+  $items = array();
+
+  $items['admin/config/people/account_reminder'] = array(
+    'title' => 'Account Activation Reminder',
+    'description' => 'Configuration for the Account Activation  Reminder module.',
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('account_activation_reminder_form'),
+    'access arguments' => array('administer users'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'account_activation_reminder.admin.inc',
+  );
+
+  $items['user/%/account-activation-reminder'] = array(
+    'title' => 'Resend Activation E-mail',
+    'description' => 'Send activation reminder e-mail to user.',
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('account_activation_reminder_confirm_form', 1),
+    'access arguments' => array('administer users'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'account_activation_reminder.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Save configuration settings for Account Activation Reminder module.
+ */
+function account_activation_reminder_form_submit($form, &$form_state) {
+  config_set('account_activation_reminder.settings', 'account_activation_reminder_e-mail_subject', $form_state['values']['account_activation_reminder_e-mail_subject']);
+  config_set('account_activation_reminder.settings', 'account_activation_reminder_e-mail_body', $form_state['values']['account_activation_reminder_e-mail_body']);
+
+  backdrop_set_message(t('The settings have been saved.'));
+}
+
+/**
+ * Send Activation e-mail to the specified user.
+ */
+function account_activation_reminder_confirm_form_submit($form, &$form_state) {
+  $account = $form_state['values']['account'];
+
+  backdrop_mail(
+        'account_activation_reminder',
+        'reminder',
+        $account->mail,
+        user_preferred_language($account),
+        $form_state['values'],
+        config_get('system.performance', 'site_mail'),
+        TRUE
+    );
+
+  backdrop_set_message(t('Activation e-mail resent.'));
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function account_activation_reminder_config_info() {
+  $prefixes['account_activation_reminder.settings'] = array(
+    'label' => t('Account Activation Reminder settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
+ * Implements hook_mail().
+ */
+function account_activation_reminder_mail($key, &$message, $params) {
+  $config = config('account_activation_reminder.settings');
+
+  switch ($key) {
+    case 'reminder':
+      $account = $params['account'];
+      $subject = $config->get('account_activation_reminder_e-mail_subject');
+      $body = $config->get('account_activation_reminder_e-mail_body');
+
+      $login_link = user_pass_reset_url($account);
+
+      $message['to'] = $account->mail;
+      $message['subject'] = $subject;
+      $body = str_replace("[user:one-time-login-url]", $login_link, $body);
+      $message['body'][] = token_replace($body, array('user' => $account));
+      break;
+  }
+}

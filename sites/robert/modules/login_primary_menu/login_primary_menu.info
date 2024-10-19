@@ -1,0 +1,19 @@
+type = module
+name = Login Primary Menu
+description = Add a login menu entry on Primay menu.
+backdrop = 1.x
+
+; Link to the module's configuration page.
+configure = admin/config/system/login_primary_menu
+
+; Add custom CSS & JS files.
+; stylesheets[all][] = css/login_primary_menu.css
+; scripts[] = js/login_primary_menu.js
+
+; List any dependencies here.
+; dependencies[] = contact
+
+; Find suggested packages and tags at: https://docs.backdropcms.org/documentation/module-packages-and-tags
+; package = User interface
+; tags[] = Administration
+; tags[] = Images

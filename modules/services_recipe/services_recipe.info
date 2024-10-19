@@ -1,0 +1,15 @@
+type = module
+name = Services Recipe
+description = A recipe to build a content type and views to organize the services your organization offers.
+package = Recipes
+backdrop = 1.x
+
+dependencies[] = system (>=1.20.0)
+
+tags[] = Recipe
+	
+
+; Added by Backdrop CMS packaging script on 2024-08-16
+project = services_recipe
+version = 1.x-1.0.0-beta03
+timestamp = 1723865816

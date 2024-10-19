@@ -1,0 +1,12 @@
+type = module
+name = Services Sample Content
+description = Sample content for your services content type.
+package = Recipes Content
+backdrop = 1.x
+
+dependencies[] = services_recipe
+
+; Added by Backdrop CMS packaging script on 2024-08-16
+project = services_recipe
+version = 1.x-1.0.0-beta03
+timestamp = 1723865816

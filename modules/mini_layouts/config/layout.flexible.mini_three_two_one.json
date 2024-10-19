@@ -1,0 +1,56 @@
+{
+    "_config_name": "layout.flexible.mini_three_two_one",
+    "name": "mini_three_two_one",
+    "title": "Mini-3-2-1",
+    "description": "3 Rows (3,2,1)",
+    "rows": {
+        "ba303832-b00f-4383-9000-ebb183d519f5": {
+            "contains": "region_4_4_4",
+            "element": "div",
+            "classes": "",
+            "container": "container",
+            "region_names": {
+                "region_0": {
+                    "label": "Top Left",
+                    "name": "top-left"
+                },
+                "region_1": {
+                    "label": "Top Center",
+                    "name": "top-center"
+                },
+                "region_2": {
+                    "label": "Top Right",
+                    "name": "top-right"
+                }
+            }
+        },
+        "7abd1b76-3284-49d0-9300-fc813070b9a7": {
+            "contains": "region_6_6",
+            "element": "div",
+            "classes": "",
+            "container": "container",
+            "region_names": {
+                "region_0": {
+                    "label": "Middle Left",
+                    "name": "middle-left"
+                },
+                "region_1": {
+                    "label": "Middle Right",
+                    "name": "middle-right"
+                }
+            }
+        },
+        "1e756505-0e1c-4d05-9105-5f598d25d88b": {
+            "contains": "region_12",
+            "element": "div",
+            "classes": "",
+            "container": "container",
+            "region_names": {
+                "region_0": {
+                    "label": "Bottom",
+                    "name": "bottom"
+                }
+            }
+        }
+    }
+}

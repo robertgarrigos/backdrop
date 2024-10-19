@@ -1,0 +1,10 @@
+[MiniLayoutsBlockTestCase]
+name = Mini Layouts block test
+description = Test Mini Layouts block functionality.
+group = Mini layouts
+file = mini_layouts.test
+
+; Added by Backdrop CMS packaging script on 2024-06-07
+project = mini_layouts
+version = 1.x-1.0.3
+timestamp = 1717804813

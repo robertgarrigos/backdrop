@@ -1,0 +1,10 @@
+{
+    "_config_name": "user_import.settings",
+    "delimiter": ",",
+    "encoding": "UTF-8",
+    "user_import_max": "250",
+    "line_max": "1000",
+    "default_settings": 0,
+    "selectable_files": 0,
+    "auto_imports_enabled": 0
+}

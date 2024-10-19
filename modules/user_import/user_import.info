@@ -1,0 +1,11 @@
+name = User Import
+description = "Import users into Backdrop from a CSV file."
+configure = admin/people/user_import/configure
+backdrop = 1.x
+type = module
+package = Deployment
+
+; Added by Backdrop CMS packaging script on 2021-10-06
+project = user_import
+version = 1.x-3.2.3
+timestamp = 1633536541

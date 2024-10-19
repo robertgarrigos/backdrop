@@ -8,33 +8,15 @@
  * Database configuration:
  *
  * Most sites can configure their database by entering the connection string
- * below. If using primary/replica databases or multiple connections, see the
+ * below. If using master/slave databases or multiple connections, see the
  * advanced database documentation at
  * https://api.backdropcms.org/database-configuration
  */
-$database = 'mysql://user:pass@localhost/database_name';
+$database = 'mysql://root:LSxNwpasQCFPXMjPyEkxkKXem@127.0.0.1/backhub';
 $database_prefix = '';
 
 /**
- * Configuration storage
- *
- * By default configuration will be stored in the filesystem, using the
- * directories specified in the $config_directories setting. Optionally,
- * configuration can be store in the database instead of the filesystem.
- * Switching this option on a live site is not currently supported without some
- * manual work.
- *
- * Example using the database for live and file storage for staging:
- * @code
- * $settings['config_active_class'] = 'ConfigDatabaseStorage';
- * $settings['config_staging_class'] = 'ConfigFileStorage';
- * @endcode
- */
-// $settings['config_active_class'] = 'ConfigFileStorage';
-// $settings['config_staging_class'] = 'ConfigFileStorage';
-
-/**
- * Site configuration files location (if using file storage for configuration)
+ * Site configuration files location.
  *
  * By default these directories are stored within the files directory with a
  * hashed path. For the best security, these directories should be in a location
@@ -52,8 +34,8 @@ $database_prefix = '';
  * $config_directories['staging'] = '/home/myusername/config/staging';
  * @endcode
  */
-$config_directories['active'] = 'files/config_' . md5($database) . '/active';
-$config_directories['staging'] = 'files/config_' . md5($database) . '/staging';
+$config_directories['active'] = '../configs/backhub/config/active';
+$config_directories['staging'] = '../configs/backhub/config/staging';
 
 /**
  * Skip the configuration staging directory cleanup
@@ -95,7 +77,7 @@ $settings['update_free_access'] = FALSE;
  * @endcode
  *
  */
-$settings['hash_salt'] = '';
+$settings['hash_salt'] = 'V_8U9SsG7yLxEsInfF7FcNkkodJRMEFo6iJ5F0LrlGg';
 
 /**
  * Trusted host configuration (optional but highly recommended).
@@ -352,7 +334,7 @@ $settings['locale_custom_strings_en'][''] = array(
  */
 $settings['404_fast_paths_exclude'] = '/\/(?:styles)|(?:system\/files)\//';
 $settings['404_fast_paths'] = '/\.(?:txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
-$settings['404_fast_html'] = '<!DOCTYPE html><html lang="en"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
+$settings['404_fast_html'] = '<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
 
 /**
  * By default, fast 404s are returned as part of the normal page request
@@ -418,10 +400,10 @@ $settings['404_fast_html'] = '<!DOCTYPE html><html lang="en"><head><title>404 No
 /**
  * Drupal backwards compatibility.
  *
- * By default, Backdrop 1.x includes a compatibility layer to keep it compatible
+ * By default, Backdrop 1.0 includes a compatibility layer to keep it compatible
  * with Drupal 7 APIs. Backdrop core itself does not use this compatibility
- * layer however. You may disable it if all the modules and themes used on the
- * site were built for Backdrop.
+ * layer however. You may disable it if all the modules you're running were
+ * built for Backdrop.
  */
 $settings['backdrop_drupal_compatibility'] = TRUE;
 
@@ -457,8 +439,21 @@ $settings['backdrop_drupal_compatibility'] = TRUE;
  * such as views, content types, vocabularies, etc. may not work as expected.
  * Use any available API functions for complex systems instead.
  */
-// $config['system.core']['site_name'] = 'My Backdrop site';
-// $config['system.core']['file_temporary_path'] = '/tmp';
+//$config['system.core']['site_name'] = 'My Backdrop site';
+//$config['system.core']['file_temporary_path'] = '/tmp';
+
+/**
+ * Add Permissions-Policy header to disable Google FLoC.
+ *
+ * By default, Backdrop sends the 'Permissions-Policy: interest-cohort=()'
+ * header, to disable Google's Federated Learning of Cohorts (FLoC) feature,
+ * which was introduced in Chrome v89. For more information about FLoC, see:
+ * https://en.wikipedia.org/wiki/Federated_Learning_of_Cohorts
+ *
+ * If you don't wish to disable FLoC in Chrome, you can uncomment the following
+ * setting, and make sure its value is set to "FALSE".
+ */
+//$config['system.core']['block_interest_cohort'] = FALSE;
 
 /**
  * File schemes whose paths should not be normalized.
@@ -476,7 +471,7 @@ $settings['backdrop_drupal_compatibility'] = TRUE;
  * scheme does not allow unintended file access when using '/../' to move up the
  * directory tree.
  */
-// $config['system.core']['file_not_normalized_schemes'] = array('example');
+//$config['system.core']['file_not_normalized_schemes'] = array('example');
 
 /**
  * Additional public file schemes.
@@ -499,25 +494,7 @@ $settings['backdrop_drupal_compatibility'] = TRUE;
  * variable, the result of which is that system_file_download() grants public
  * access to all files within that scheme.
  */
-// $config['system.core']['file_additional_public_schemes'] = array('example');
-
-/**
- * Sensitive request headers in backdrop_http_request() when following a
- * redirect.
- *
- * By default backdrop_http_request() will strip sensitive request headers when
- * following a redirect if the redirect location has a different http host to
- * the original request, or if the scheme downgrades from https to http.
- *
- * These variables allow opting out of this behaviour. Careful consideration of
- * the security implications of opting out is recommended. To opt out, set to
- * FALSE.
- *
- * @see _backdrop_should_strip_sensitive_headers_on_http_redirect()
- * @see backdrop_http_request()
- */
-// $config['system.core']['backdrop_http_request']['strip_sensitive_headers_on_host_change'] = TRUE;
-// $config['system.core']['backdrop_http_request']['strip_sensitive_headers_on_https_downgrade'] = TRUE;
+//$config['system.core']['file_additional_public_schemes'] = array('example');
 
 /**
  * Include a local settings file, if available.
@@ -540,3 +517,4 @@ $settings['backdrop_drupal_compatibility'] = TRUE;
 if (file_exists(__DIR__ . '/settings.local.php')) {
   include __DIR__ . '/settings.local.php';
 }
+$database_charset = 'utf8mb4';

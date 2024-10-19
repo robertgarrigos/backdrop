@@ -1,0 +1,214 @@
+<?php
+
+/**
+ * @file
+ * Tests for block.module.
+ */
+
+class MiniLayoutsBlockTestCase extends BackdropWebTestCase {
+  protected $admin_user;
+
+  function setUp() {
+    parent::setUp('mini_layouts', 'layout_test');
+
+    $this->admin_user = $this->backdropCreateUser(array(
+      'administer blocks',
+      'access administration pages',
+      'administer layouts',
+    ));
+    $this->backdropLogin($this->admin_user);
+  }
+
+  /**
+   * Test creating mini layouts block, editing, and then deleting it.
+   */
+  function testMinilayoutsBlock() {
+    // Create a mini layout block.
+    $this->backdropGet('admin/structure/mini-layouts');
+    $this->assertText('No mini layouts blocks have been created yet.');
+    $this->clickLink(t('Add mini layouts'));
+
+    $mini_layout_title = $this->randomName();
+    $mini_layout_description = $this->randomName();
+    $mini_layout_name = strtolower($mini_layout_title);
+    $mini_layout_block_title = 'Block title: ' . $mini_layout_title;
+
+    $edit = array(
+      'title' => $mini_layout_title,
+      'name' => $mini_layout_name,
+      'description' => $mini_layout_description,
+      'block_title' => $mini_layout_block_title,
+      'layout_template' => 'moscone',
+    );
+    $this->backdropPost(NULL, $edit, t('Save mini layout'));
+    $this->backdropGet('admin/structure/mini-layouts');
+    $this->assertText($mini_layout_block_title);
+
+    // Repeat to create another block.
+    $this->clickLink(t('Add mini layouts'));
+
+    $mini_layout_title2 = $this->randomName();
+    $mini_layout_name2 = strtolower($mini_layout_title2);
+    $mini_layout_block_title2 = 'Block title: ' . $mini_layout_title2;
+
+    $edit = array(
+      'title' => $mini_layout_title2,
+      'name' => $mini_layout_name2,
+      'description' => $this->randomName(),
+      'block_title' => $mini_layout_block_title2,
+      'layout_template' => 'moscone',
+    );
+    $this->backdropPost(NULL, $edit, t('Save mini layout'));
+    $this->backdropGet('admin/structure/mini-layouts');
+    $this->assertText($mini_layout_block_title2);
+
+    // Should be two blocks.
+    $mini_layouts_rows = $this->xpath('//table[contains(@class,"mini-layouts-list")]/tbody/tr');
+    $this->assertEqual(count($mini_layouts_rows), 2, 'Two table rows.');
+
+    // Test configuring the new mini layout.
+    $this->backdropGet('admin/structure/mini-layouts/manage/' . $mini_layout_name2 . '/configure');
+
+    $mini_layout_title3 = $this->randomName();
+    $mini_layout_block_title3 = $this->randomName();
+
+    $edit = array(
+      'title' => $mini_layout_title3,
+      'block_title' => $mini_layout_block_title3,
+    );
+    $this->backdropPost(NULL, $edit, t('Save mini layout'));
+
+    $this->backdropGet('admin/structure/mini-layouts');
+    $this->assertText($mini_layout_block_title3);
+    $this->backdropGet('admin/structure/mini-layouts/manage/' . $mini_layout_name2 . '/delete');
+    $this->backdropPost(NULL, array(), t('Delete'));
+    $this->backdropGet('admin/structure/mini-layouts');
+    // Should be one block.
+    $mini_layouts_rows = $this->xpath('//table[contains(@class,"mini-layouts-list")]/tbody/tr');
+    $this->assertEqual(count($mini_layouts_rows), 1, 'One table row.');
+
+    // Configure blocks within the mini layout.
+    $this->backdropGet('admin/structure/mini-layouts/manage/' . $mini_layout_name . '/configure-layout-blocks');
+
+    // Add a block to the sidebar.
+    $this->clickLink(t('Add block'), 3);
+    $this->assertText(t('A testing block for layouts.'));
+    $this->assertNoText(t('A testing block for layouts with contexts.'));
+    $this->clickLink(t('Layout foo block'));
+    $edit = array(
+      'block_settings[count]' => 5,
+    );
+    $this->backdropPost(NULL, $edit, t('Add block'));
+    $this->backdropPost(NULL, array(), t('Save layout'));
+
+   // Create a new layout at a new path to test things.
+    $this->backdropGet('admin/structure/layouts');
+    $this->clickLink(t('Add layout'));
+
+    $layout_title = $this->randomName();
+    $layout_name = strtolower($layout_title);
+    $layout_url = 'layout-test-path';
+    $edit = array(
+      'title' => $layout_title,
+      'name' => $layout_name,
+      'layout_template' => 'moscone_flipped',
+      'path' => $layout_url,
+    );
+    $this->backdropPost(NULL, $edit, t('Create layout'));
+
+    // We should be taken to the layout content page next.
+    $this->assertText(t('Layout created. Blocks may now be added to this layout.'));
+
+    // Check that the block we added to the mini layout isnt showing yet.
+    $this->backdropGet($layout_url);
+    $this->assertNoText('Foo subject');
+
+    // Add the mini layout block to the sidebar.
+    $this->backdropGet('admin/structure/layouts/manage/' . $layout_name);
+    $this->clickLink(t('Add block'), 3);
+    $this->assertText(t($mini_layout_description));
+    $this->clickLink(t($mini_layout_block_title));
+    $edit = array();
+    $this->backdropPost(NULL, $edit, t('Add block'));
+    $this->backdropPost(NULL, array(), t('Save layout'));
+
+    // Check that the block we added to the mini layout is showing now.
+    $this->backdropGet($layout_url);
+    $this->assertText('Foo subject');
+    $this->assertText(format_string('The setting of count is @setting.', array('@setting' => 5)));
+    $elements = $this->xpath('//*[contains(@class,:region)]//*[contains(@class,:block)]', array(
+      ':region' => 'l-sidebar',
+      ':block' => 'block-layout-test-foo',
+    ));
+    $this->assertEqual(count($elements), 1, 'The sample block was found in the sidebar.');
+
+    // Test contexts on the mini layout.
+    $edit = array();
+    $this->backdropPost('admin/structure/mini-layouts/manage/' . $mini_layout_name . '/configure', $edit, t('Add context'));
+
+    // Add a custom node context to the layout.
+    $edit = array(
+      'context' => 'node',
+    );
+    $this->backdropPost(NULL, $edit, t('Load context'));
+    $edit = array(
+      'id' => '2',
+    );
+    $this->backdropPost(NULL, $edit, t('Add context'));
+    $this->assertText(t('Node ID: 2'));
+
+    // Testing block that requires contexts should now be available.
+    $this->backdropGet('admin/structure/mini-layouts/manage/' . $mini_layout_name . '/configure-layout-blocks');
+
+    $this->clickLink(t('Add block'), 3);
+    $this->assertText(t('A testing block for layouts.'));
+    $this->assertText(t('A testing block for layouts with contexts.'));
+    $this->clickLink(t('Layout bar block'));
+    $edit = array();
+    $this->backdropPost(NULL, $edit, t('Add block'));
+    $this->backdropPost(NULL, array(), t('Save layout'));
+
+    // The context block should now be visible at the main layout path.
+    $this->backdropGet($layout_url);
+    $this->assertText('Foo subject');
+    $this->assertText('Bar subject');
+    $node2 = node_load(2);
+    $this->assertText(format_string('The user email is @mail and the node title is @title', array('@mail' => $this->admin_user->mail, '@title' => $node2->title)));
+
+    // Change the main layout path to a node path.
+    $edit = array(
+      'path' => 'node/%',
+    );
+    $this->backdropPost('admin/structure/layouts/manage/' . $layout_name . '/configure', $edit, t('Save layout'));
+
+    // Remove the node context on the mini layout.
+    $edit = array();
+    $this->backdropPost('admin/structure/mini-layouts/manage/' . $mini_layout_name . '/configure', $edit, t('Remove'));
+    $this->assertNoText(t('Node ID: 2'));
+    $this->backdropPost(NULL, array(), t('Save mini layout'));
+
+    // Add a custom node context to the mini layout.
+    $this->backdropPost('admin/structure/mini-layouts/manage/' . $mini_layout_name . '/configure', $edit, t('Add context'));
+    $edit = array(
+      'context' => 'path',
+    );
+    $this->backdropPost(NULL, $edit, t('Load context'));
+    $edit = array(
+      'path' => 'node/%',
+    );
+    $this->backdropPost(NULL, $edit, t('Add context'));
+    $this->assertText(t('Position 2: node/%'));
+    $this->backdropPost(NULL, array(), t('Save mini layout'));
+
+    // The context block should no longer be visible at the main layout path.
+    $node1 = node_load(1);
+    $this->backdropGet('node/' . $node1->nid);
+    $this->assertText('Foo subject');
+    $this->assertText('Bar subject');
+    $this->assertText(format_string('The user email is @mail and the node title is @title', array('@mail' => $this->admin_user->mail, '@title' => $node1->title)));
+
+    // Test relationships.
+    // Test visibility conditions.
+  }
+
+}
