@@ -317,7 +317,7 @@ function node_form($form, &$form_state, Node $node) {
   $form['options'] = array(
     '#type' => 'fieldset',
     '#access' => user_access('administer nodes'),
-    '#title' => $node->nid ? t('Publishing options') : t('Publishing actions'),
+    '#title' => t('Publishing options'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#group' => 'additional_settings',
