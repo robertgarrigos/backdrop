@@ -1,0 +1,5 @@
+name = Config translation
+description = Allow to translate config string thru the Backdrop UI
+backdrop = 1.x
+type = module
+package = Translation

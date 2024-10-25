@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ * A short description of this module.
+ */
+
+/**
+ * Implements hook_config_info().
+ */
+// function login_primary_menu_config_info() {
+//   return array(
+//     'login_primary_menu.settings' => array(
+//       'label' => t('Login Primary Menu settings'),
+//       'group' => t('Configuration'),
+//     ),
+//   );
+// }
+
+/**
+ * Implements hook_menu().
+ */
+function login_primary_menu_menu() {
+  $items['login'] = array(
+    'title' => 'Log in',
+    'title callback' => 'login_primary_menu_title',
+    'page callback' => 'login_primary_menu_page',
+    'type' => MENU_NORMAL_ITEM,
+    'menu_name' => 'main-menu', // This is the machine name of the main menu.
+    'access callback' => TRUE,
+    'weight' => 10,
+  );
+  $items['user/%user/logut'] = array(
+    'title' => 'Logout',
+    'access callback' => 'user_is_logged_in',
+    'page callback' => 'user_logout',
+    'weight' => 10,
+    'menu_name' => 'user-menu',
+    'file' => 'user.pages.inc',
+    'file path' => backdrop_get_path('module', 'user'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+function login_primary_menu_title() {
+  global $user;
+  if ($user->uid != 0) {
+    return t('Your account');
+  }
+  else {
+    return t('Log in', array(), array('context' => 'Onacodinenca'));
+  }
+}
+
+function login_primary_menu_page() {
+  global $user;
+  // var_dump($user);
+  if ($user->uid != 0) {
+    backdrop_goto('user');
+  }
+  else {
+    backdrop_goto('user/login');
+  }
+}
+
+/**
+ * Process variables for user-profile.tpl.php.
+ *
+ * The $variables array contains the following arguments:
+ * - $account
+ *
+ * @see user-profile.tpl.php
+ */
+function login_primary_menu_preprocess_user_profile(&$variables) {
+  // print_r($variables);
+  $variables['user_profile']['logout_button'] = '<a class="btn btn-warning" href="/user/logout">Tanqueu sessió</a>';
+}
