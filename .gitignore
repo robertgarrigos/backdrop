@@ -12,5 +12,6 @@ settings.php
 /private
 sites/*/files
 sites/*/private
+sites/*/modules
 
 modules/*
