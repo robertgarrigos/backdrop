@@ -1,5 +1,0 @@
-{
-    "_config_name": "account_activation_reminder.settings",
-    "account_activation_reminder_e-mail_subject": "Administrative Warning",
-    "account_activation_reminder_e-mail_body": "ACCOUNT_ACTIVATION_REMINDER_BODY"
-}

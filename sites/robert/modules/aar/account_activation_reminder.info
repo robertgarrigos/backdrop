@@ -1,6 +1,0 @@
-name = Account Activation Reminder
-description = Customizable email to be sent when user ignores initial welcome email.
-backdrop = 1.x
-type = module
-package = Account Functions
-configure = admin/config/people/account_reminder
