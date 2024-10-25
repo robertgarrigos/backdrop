@@ -1,6 +1,0 @@
-name = Views Exposed Form Fieldset
-description = Provide an option to render the "exposed form widgets" in fieldsets or vertical tabs.
-backdrop = 1.x
-type = module
-package = Views
-dependencies[] = views
