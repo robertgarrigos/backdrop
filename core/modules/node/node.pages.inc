@@ -317,7 +317,7 @@ function node_form($form, &$form_state, Node $node) {
   $form['options'] = array(
     '#type' => 'fieldset',
     '#access' => user_access('administer nodes'),
-    '#title' => t('Publishing options'),
+    '#title' => t('Publishing options'), // HACK
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#group' => 'additional_settings',
