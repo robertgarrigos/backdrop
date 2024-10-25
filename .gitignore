@@ -5,6 +5,7 @@
 /settings*.php
 sites/*/settings*.php
 sites/sites.php
+settings.php
 
 # Ignore paths that contain user-generated content.
 /files
