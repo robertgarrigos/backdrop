@@ -16,3 +16,4 @@ sites/*/modules
 sites/*/themes
 
 modules/*
+themes/*
