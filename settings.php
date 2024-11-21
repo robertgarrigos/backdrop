@@ -7,13 +7,19 @@
 /**
  * Database configuration:
  *
- * Most sites can configure their database by entering the connection string
- * below. If using master/slave databases or multiple connections, see the
- * advanced database documentation at
- * https://api.backdropcms.org/database-configuration
+ * Most sites can configure their database by entering the connection details
+ * below. For advanced configurations, including:
+ *   - Custom 'port', 'prefix', 'charset', 'collation' or 'driver' values
+ *   - Primary/replica databases
+ *   - Multiple connections
+ * See the documentation at https://docs.backdropcms.org/database-configuration
  */
-$database = 'mysql://root:LSxNwpasQCFPXMjPyEkxkKXem@127.0.0.1/backhub';
-$database_prefix = '';
+$database = array(
+  'database' => 'backhub',
+  'username' => 'root',
+  'password' => 'LSxNwpasQCFPXMjPyEkxkKXem',
+  'host' => '127.0.0.1',
+);
 
 /**
  * Site configuration files location.
