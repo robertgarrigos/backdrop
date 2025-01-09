@@ -8,6 +8,7 @@
  * Page callback; Display a list of all custom blocks.
  */
 function block_admin_list() {
+  backdrop_add_library('system', 'backdrop.ajax');
   $custom_blocks_info = block_block_info();
 
   $help_text = array(
@@ -38,6 +39,11 @@ function block_admin_list() {
     $links['delete'] = array(
       'title' => t('Delete'),
       'href' => 'admin/structure/block/manage/' . $delta . '/delete',
+      'attributes' => array(
+        'class' => array('use-ajax'),
+        'data-dialog' => 'true',
+        'data-dialog-options' => json_encode(array('width' => '70%')),
+      ),
     );
     if (module_exists('locale') && $block['default_langcode'] != LANGUAGE_NONE) {
       $links['translate'] = array(
@@ -153,7 +159,11 @@ function block_admin_configure($form, &$form_state, $delta = NULL) {
       '#type' => 'link',
       '#title' => t('Delete'),
       '#href' => 'admin/structure/block/manage/' . $delta . '/delete',
-      '#attributes' => array('class' => array('button', 'button-secondary', 'form-delete')),
+      '#attributes' => array(
+        'class' => array('button', 'button-secondary', 'form-delete', 'use-ajax'),
+        'data-dialog' => 'true',
+        'data-dialog-options' => json_encode(array('width' => '70%')),
+      ),
     );
   }
   $form['actions']['cancel'] = array(

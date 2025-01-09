@@ -365,6 +365,10 @@
   box-shadow: 0 0 12px -8px #666;
 }
 
+.ui-dialog .ui-dialog-title {
+  white-space: wrap;
+}
+
 /**
  * Slider
  */
