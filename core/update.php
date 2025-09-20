@@ -30,7 +30,7 @@ chdir(BACKDROP_ROOT);
 // yet available. It is defined in bootstrap.inc, but it is not possible to
 // load that file yet as it would cause a fatal error on older versions of PHP.
 if (version_compare(PHP_VERSION, '7.1.0') < 0) {
-  print t('Your PHP installation is too old. Backdrop CMS requires at least PHP 7.1.0. See the <a href="!url">System Requirements</a> page for more information.', array('!url' => 'https://backdropcms.org/guide/requirements'));
+  print 'Your PHP installation is too old. Backdrop CMS requires at least PHP 7.1.0. See the <a href="https://backdropcms.org/guide/requirements">System Requirements</a> page for more information.';
   exit;
 }
 
