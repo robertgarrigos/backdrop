@@ -627,6 +627,9 @@ function find_conf_path($http_host, $script_name, $require_settings = TRUE) {
     for ($i = count($uri) - 1; $i > 0; $i--) {
       for ($j = count($server); $j > 0; $j--) {
         $dir = implode('.', array_slice($server, -$j)) . implode('.', array_slice($uri, 0, $i));
+        if (count($server) > 1 && $j == 1 && strpos($dir, '.') === false) {
+          continue;
+        }
         if (isset($sites[$dir]) && file_exists(BACKDROP_ROOT . '/sites/' . $sites[$dir])) {
           $dir = $sites[$dir];
         }
