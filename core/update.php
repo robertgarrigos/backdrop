@@ -114,7 +114,7 @@ function update_script_selection_form($form, &$form_state) {
       $incompatible_count++;
       $module_update_key = $data['module'] . '_updates';
       if (isset($form['start'][$module_update_key]['#items'][$data['number']])) {
-        $text = $data['missing_dependencies'] ? t('This update will been skipped due to the following missing dependencies:') . '<em>' . implode(', ', $data['missing_dependencies']) . '</em>' : t("This update will be skipped due to an error in the module's code.");
+        $text = $data['missing_dependencies'] ? t('This update will be skipped due to the following missing dependencies:') . '<em>' . implode(', ', $data['missing_dependencies']) . '</em>' : t("This update will be skipped due to an error in the module's code.");
         $form['start'][$module_update_key]['#items'][$data['number']] .= '<div class="warning">' . $text . '</div>';
       }
       // Move the module containing this update to the top of the list.
