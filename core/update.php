@@ -224,7 +224,7 @@ function update_results_page() {
     backdrop_set_message(t("Reminder: Don't forget to set the !update value in your !settings file back to !false.", array(
       '!update' => "<code>\$settings['update_free_access']</code>",
       '!settings' => '<code>settings.php</code>',
-        '!false' => '<code>FALSE</code>',
+      '!false' => '<code>FALSE</code>',
       )), 'warning');
   }
 
