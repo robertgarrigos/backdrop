@@ -210,7 +210,10 @@ function update_results_page() {
   else {
     $updates_remaining = reset($_SESSION['updates_remaining']);
     list($module, $version) = array_pop($updates_remaining);
-    $message = t('The update process was aborted prematurely while running') . ' <strong>' . t('update #@version in @module.module', array('@version' => $version, '@module' => $module)) . '</strong>.' . ' ' . $log_message;
+    $message = t('The update process was aborted prematurely while running <strong>update #@version in @module.module</strong>.', array(
+      '@version' => $version,
+      '@module' => $module,
+    )) . ' ' . $log_message;
     if (module_exists('dblog')) {
       $message .= ' ' . t('You may need to check the !watchdog database table manually.', array('!watchdog' => '<code>watchdog</code>'));
     }
