@@ -225,7 +225,7 @@ function update_results_page() {
       '!update' => "<code>\$settings['update_free_access']</code>",
       '!settings' => '<code>settings.php</code>',
       '!false' => '<code>FALSE</code>',
-      )), 'warning');
+    )), 'warning');
   }
 
   $output .= theme('links', array('links' => update_helpful_links()));
