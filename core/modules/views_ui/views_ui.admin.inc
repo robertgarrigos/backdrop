@@ -3890,7 +3890,7 @@ function views_ui_add_item_form($form, &$form_state) {
       'data-views-offset' => 'bottom',
     ),
   );
-  views_ui_standard_form_buttons($form, $form_state, 'views_ui_add_item_form', t('Add and configure @types', array('@types' => $ltitle)));
+  views_ui_standard_form_buttons($form, $form_state, 'views_ui_add_item_form', t('Add and configure !types', array('!types' => $ltitle)));
 
   // Remove the default submit function.
   $form['actions']['submit']['#submit'] = array_diff($form['actions']['submit']['#submit'], array('views_ui_standard_submit'));
