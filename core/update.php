@@ -50,7 +50,7 @@ define('MAINTENANCE_MODE', 'update');
  * Renders form with a list of available site updates.
  */
 function update_selection_page() {
-  backdrop_set_title('Backdrop site update');
+  backdrop_set_title(t('Backdrop site update'));
   $elements = backdrop_get_form('update_script_selection_form');
   $output = backdrop_render($elements);
 
@@ -82,7 +82,7 @@ function update_script_selection_form($form, &$form_state) {
     if (!isset($update['start'])) {
       $form['start'][$module] = array(
         '#type' => 'item',
-        '#title' => $module . ' module',
+        '#title' => t('@module module', array('@module' => $module)),
         '#markup'  => $update['warning'],
         '#prefix' => '<div class="messages warning">',
         '#suffix' => '</div>',
@@ -99,7 +99,7 @@ function update_script_selection_form($form, &$form_state) {
       $form['start'][$module . '_updates'] = array(
         '#theme' => 'item_list',
         '#items' => $update['pending'],
-        '#title' => $module . ' module',
+        '#title' => t('@module module', array('@module' => $module)),
       );
     }
     if (isset($update['pending'])) {
@@ -114,7 +114,7 @@ function update_script_selection_form($form, &$form_state) {
       $incompatible_count++;
       $module_update_key = $data['module'] . '_updates';
       if (isset($form['start'][$module_update_key]['#items'][$data['number']])) {
-        $text = $data['missing_dependencies'] ? 'This update will been skipped due to the following missing dependencies: <em>' . implode(', ', $data['missing_dependencies']) . '</em>' : "This update will be skipped due to an error in the module's code.";
+        $text = $data['missing_dependencies'] ? t('This update will be skipped due to the following missing dependencies:') . '<em>' . implode(', ', $data['missing_dependencies']) . '</em>' : t("This update will be skipped due to an error in the module's code.");
         $form['start'][$module_update_key]['#items'][$data['number']] .= '<div class="warning">' . $text . '</div>';
       }
       // Move the module containing this update to the top of the list.
@@ -124,12 +124,12 @@ function update_script_selection_form($form, &$form_state) {
 
   // Warn the user if any updates were incompatible.
   if ($incompatible_updates_exist) {
-    backdrop_set_message('Some of the pending updates cannot be applied because their dependencies were not met.', 'warning');
+    backdrop_set_message(t('Some of the pending updates cannot be applied because their dependencies were not met.'), 'warning');
   }
 
   $form['help'] = array(
     '#type' => 'help',
-    '#markup' => 'Updates have been found that need to be applied. You may review the updates below before executing them.',
+    '#markup' => t('Updates have been found that need to be applied. You may review the updates below before executing them.'),
     '#weight' => -5,
   );
   if ($incompatible_count) {
@@ -189,36 +189,43 @@ function update_helpful_links() {
  * Displays results of the update script with any accompanying errors.
  */
 function update_results_page() {
-  backdrop_set_title('Backdrop site update');
+  backdrop_set_title(t('Backdrop site update'));
 
   update_task_list();
   // Report end result.
   if (module_exists('dblog') && user_access('access site reports')) {
-    $log_message = 'All errors have been <a href="' . base_path() . '?q=admin/reports/dblog">logged</a>.';
+    $log_message = t('All errors have been <a href="!url">logged</a>.', array('!url' => base_path() . '?q=admin/reports/dblog'));
   }
   else {
-    $log_message = 'All errors have been logged.';
+    $log_message = t('All errors have been logged.');
   }
 
   $output = '';
   if (!isset($_SESSION['update_success'])) {
-    $output = '<p>No updates needed.</p>';
+    $output = '<p>' . t('No updates needed') . '</p>';
   }
   elseif ($_SESSION['update_success']) {
-    $output = '<p>Updates were attempted. If you see no failures below, you may proceed happily back to your <a href="' . base_path() . '">site</a>. Otherwise, you may need to update your database manually.' . ' ' . $log_message . '</p>';
+    $output = '<p>' . t('Updates were attempted. If you see no failures below, you may proceed happily back to your <a href="!url">site</a>. Otherwise, you may need to update your database manually.', array('!url' => base_path())) . ' ' . $log_message . '</p>';
   }
   else {
     $updates_remaining = reset($_SESSION['updates_remaining']);
     list($module, $version) = array_pop($updates_remaining);
-    $message = 'The update process was aborted prematurely while running <strong>update #' . $version . ' in ' . $module . '.module</strong>.' . ' ' . $log_message;
+    $message = t('The update process was aborted prematurely while running <strong>update #@version in @module.module</strong>.', array(
+      '@version' => $version,
+      '@module' => $module,
+    )) . ' ' . $log_message;
     if (module_exists('dblog')) {
-      $message .= ' ' . 'You may need to check the <code>watchdog</code> database table manually.';
+      $message .= ' ' . t('You may need to check the !watchdog database table manually.', array('!watchdog' => '<code>watchdog</code>'));
     }
     backdrop_set_message($message, 'error');
   }
 
   if (settings_get('update_free_access')) {
-    backdrop_set_message("Reminder: Don't forget to set the <code>\$settings['update_free_access']</code> value in your <code>settings.php</code> file back to <code>FALSE</code>.", 'warning');
+    backdrop_set_message(t("Reminder: Don't forget to set the !update value in your !settings file back to !false.", array(
+      '!update' => "<code>\$settings['update_free_access']</code>",
+      '!settings' => '<code>settings.php</code>',
+      '!false' => '<code>FALSE</code>',
+    )), 'warning');
   }
 
   $output .= theme('links', array('links' => update_helpful_links()));
@@ -242,13 +249,13 @@ function update_results_page() {
               $messages[] = '<li class="success">' . $query['query'] . '</li>';
             }
             else {
-              $messages[] = '<li class="failure"><strong>Failed:</strong> ' . $query['query'] . '</li>';
+              $messages[] = '<li class="failure"><strong>' . t('Failed') . ':</strong> ' . $query['query'] . '</li>';
             }
           }
 
           if ($messages) {
             $module_has_message = TRUE;
-            $query_messages .= '<h4>Update #' . $number . "</h4>\n";
+            $query_messages .= '<h4>' . t('Update #') . $number . "</h4>\n";
             $query_messages .= '<ul>' . implode("\n", $messages) . "</ul>\n";
           }
         }
@@ -256,12 +263,12 @@ function update_results_page() {
         // If there were any messages in the queries then prefix them with the
         // module name and add it to the global message list.
         if ($module_has_message) {
-          $all_messages .= '<h3>' . $module . " module</h3>\n" . $query_messages;
+          $all_messages .= '<h3>' . t('@module module', array('@module' => $module)) . "</h3>\n" . $query_messages;
         }
       }
     }
     if ($all_messages) {
-      $output .= '<div class="update-results"><h2>The following updates returned messages</h2>';
+      $output .= '<div class="update-results"><h2>' . t('The following updates returned messages') . '</h2>';
       $output .= $all_messages;
       $output .= '</div>';
     }
@@ -298,8 +305,8 @@ function update_info_page() {
   update_task_list('info');
   backdrop_set_title('Backdrop site update');
   $token = backdrop_get_token('update');
-  $output = '<p>Use this utility to update your site whenever you install a new version of Backdrop CMS or one of the site\'s modules.</p>';
-  $output .= '<p>For more detailed information, see the <a href="https://backdropcms.org/upgrade">Upgrading Backdrop CMS</a> page. If you are unsure of what these terms mean, contact your hosting provider.</p>';
+  $output = '<p>' . t('Use this utility to update your site whenever you install a new version of Backdrop CMS or one of the site\'s modules.') . '</p>';
+  $output .= '<p>' . t('For more detailed information, see the <a href="!url">Upgrading Backdrop CMS</a> page. If you are unsure of what these terms mean, contact your hosting provider.', array('!url' => 'https://backdropcms.org/upgrade')) . '</p>';
   $module_status_report = update_upgrade_check_dependencies();
   if (!empty($module_status_report)) {
     $output .= $module_status_report;
@@ -308,8 +315,8 @@ function update_info_page() {
   $form_action = check_url(backdrop_current_script_url(array('op' => 'check_updates', 'token' => $token)));
   $output .= '<form method="post" action="' . $form_action . '">
   <div class="form-actions">
-    <input type="submit" value="Continue" class="form-submit button-primary" />
-    <a href="' . base_path() . '">Cancel</a>
+    <input type="submit" value="' . t('Continue') . '" class="form-submit button-primary" />
+    <a href="' . base_path() . '">' . t('Cancel') . '</a>
   </div>
   </form>';
   $output .= "\n";
@@ -447,12 +454,12 @@ function update_task_list($set_active = NULL) {
 
   // Default list of tasks.
   $tasks = array(
-    'requirements' => 'Verify requirements',
-    'info' => 'Overview',
-    'backup' => 'Backup',
-    'select' => 'Review updates',
-    'update' => 'Run updates',
-    'finished' => 'Review log',
+    'requirements' => t('Verify requirements'),
+    'info' => t('Overview'),
+    'backup' => t('Backup'),
+    'select' => t('Review updates'),
+    'update' => t('Run updates'),
+    'finished' => t('Review log'),
   );
 
   // Hide the Backup task if upgrading from Drupal 7, where the original
@@ -500,9 +507,9 @@ function update_check_requirements($skip_warnings = FALSE) {
   // If there are errors, always display them. If there are only warnings, skip
   // them if the caller has indicated they should be skipped.
   if ($severity == REQUIREMENT_ERROR || ($severity == REQUIREMENT_WARNING && !$skip_warnings)) {
-    backdrop_set_title('Requirements problem');
+    backdrop_set_title(t('Requirements problem'));
     $task_list = update_task_list('requirements');
-    $status_report = 'Resolve the problems and <a href="' . check_url(backdrop_requirements_url($severity)) . '">try again</a>.';
+    $status_report = t('Resolve the problems and <a href="!url">try again</a>.', array('!url' => check_url(backdrop_requirements_url($severity))));
     $status_report .= '<br><br>';
     $status_report .= theme('status_report', array('requirements' => $requirements, 'phase' => 'update'));
     print theme('update_page', array('content' => $status_report, 'sidebar' => $task_list));
